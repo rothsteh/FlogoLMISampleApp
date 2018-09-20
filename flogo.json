@@ -1,0 +1,127 @@
+{
+  "name": "FlogoLMIUldp",
+  "type": "flogo:app",
+  "version": "0.0.1",
+  "appModel": "1.0.0",
+  "triggers": [
+    {
+      "id": "receive_http_message",
+      "ref": "github.com/TIBCOSoftware/flogo-contrib/trigger/rest",
+      "name": "Receive HTTP Message",
+      "description": "Simple REST Trigger",
+      "settings": {
+        "port": "9988"
+      },
+      "handlers": [
+        {
+          "action": {
+            "ref": "github.com/TIBCOSoftware/flogo-contrib/action/flow",
+            "data": {
+              "flowURI": "res://flow:send_lmi"
+            },
+            "mappings": {
+              "input": [
+                {
+                  "mapTo": "lmiData",
+                  "type": "assign",
+                  "value": "$.content"
+                }
+              ]
+            }
+          },
+          "settings": {
+            "method": "POST",
+            "path": "/sendlmi"
+          }
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "flow:send_lmi",
+      "data": {
+        "name": "sendLMI",
+        "metadata": {
+          "input": [
+            {
+              "name": "lmiData",
+              "type": "string"
+            }
+          ],
+          "output": [
+            {
+              "name": "outputdata",
+              "type": "string"
+            }
+          ]
+        },
+        "tasks": [
+          {
+            "id": "SendUldp_2",
+            "name": "Send ULDP messages to LogLogic LMI",
+            "description": "Send a ULDP syslog message",
+            "activity": {
+              "ref": "github.com/TIBCOSoftware/lmi-flogo-collectors/SendUldp",
+              "input": {
+                "host": "your.lmi.host",
+                "port": 5515,
+                "origin": null,
+                "deviceDomain": null,
+                "appName": null,
+                "msgId": null,
+                "flowInfo": "false",
+                "facility": 16,
+                "severity": 6,
+                "flattenJson": "false",
+                "message": ""
+              },
+              "mappings": {
+                "input": [
+                  {
+                    "type": "assign",
+                    "value": "$flow.lmiData",
+                    "mapTo": "message"
+                  },
+                  {
+                    "type": "literal",
+                    "value": 9,
+                    "mapTo": "facility"
+                  },
+                  {
+                    "type": "literal",
+                    "value": 14,
+                    "mapTo": "severity"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "id": "actreply_3",
+            "name": "Reply To Trigger",
+            "description": "Simple Reply Activity",
+            "activity": {
+              "ref": "github.com/TIBCOSoftware/flogo-contrib/activity/actreply",
+              "input": {
+                "mappings": [
+                  {
+                    "mapTo": "outputdata",
+                    "type": "expression",
+                    "value": "string.concat(\"Sent to LMI\", $flow.lmiData)"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "links": [
+          {
+            "from": "SendUldp_2",
+            "to": "actreply_3"
+          }
+        ]
+      }
+    }
+  ]
+}
