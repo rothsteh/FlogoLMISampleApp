@@ -26,6 +26,18 @@
                   "type": "assign",
                   "value": "$.content"
                 }
+              ],
+              "output": [
+                {
+                  "mapTo": "code",
+                  "type": "literal",
+                  "value": 200
+                },
+                {
+                  "mapTo": "data",
+                  "type": "assign",
+                  "value": "$.outputdata"
+                }
               ]
             }
           },
@@ -64,7 +76,7 @@
             "activity": {
               "ref": "github.com/TIBCOSoftware/lmi-flogo-collectors/SendUldp",
               "input": {
-                "host": "your.lmi.host",
+                "host": "your.lmi.here",
                 "port": 5515,
                 "origin": null,
                 "deviceDomain": null,
@@ -108,7 +120,7 @@
                   {
                     "mapTo": "outputdata",
                     "type": "expression",
-                    "value": "string.concat(\"Sent to LMI\", $flow.lmiData)"
+                    "value": "string.concat(\"Sent to LMI \", $flow.lmiData)"
                   }
                 ]
               }
