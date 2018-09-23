@@ -76,7 +76,7 @@
             "activity": {
               "ref": "github.com/TIBCOSoftware/lmi-flogo-collectors/SendUldp",
               "input": {
-                "host": "your.lmi.here",
+                "host": "your.lmi.host",
                 "port": 5515,
                 "origin": null,
                 "deviceDomain": null,
